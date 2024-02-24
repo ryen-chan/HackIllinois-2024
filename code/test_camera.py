@@ -10,7 +10,7 @@ def obj_detection():
         box, label, conf = cvlib.detect_common_objects(frame)
         image = draw_bbox(frame, box, label, conf)
         cv2.imshow("Camera Feed", image)
-        
+
 if __name__ == '__main__':
 
     video = cv2.VideoCapture(0)
@@ -24,8 +24,8 @@ if __name__ == '__main__':
     start_time = time.time()
 
     while time.time() - start_time < total_seconds:
-        #camera.capture()
-        #print(camera.image_array)
-        obj_detection()
+        camera.capture()
+        print(camera.image_array)
+        #obj_detection()
         time.sleep(max(0, 1/sample_hz -
                        (time.time() - start_time)))

@@ -1,18 +1,20 @@
 from src import camera as camera_module
-import time
+from time import sleep
 
-import cv2
-import cvlib
-from cvlib.object_detection import draw_bbox
-
+"""
 def obj_detection():
         _, frame = video.read()
         box, label, conf = cvlib.detect_common_objects(frame)
         image = draw_bbox(frame, box, label, conf)
         cv2.imshow("Camera Feed", image)
-
+"""
 if __name__ == '__main__':
+    camera_module.start_preview()
+    sleep(5)
+    camera_module.stop_preview()
 
+
+    """
     video = cv2.VideoCapture(0)
 
     total_seconds = 60
@@ -29,3 +31,4 @@ if __name__ == '__main__':
         #obj_detection()
         time.sleep(max(0, 1/sample_hz -
                        (time.time() - start_time)))
+    """

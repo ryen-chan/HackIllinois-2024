@@ -2,6 +2,9 @@ from typing import TypedDict
 from .. import vehicle as vehicle_module, camera as camera_module, distance_sensor as distance_sensor_module, led as led_module, switch as switch_module
 import time
 
+import cv2
+import cvlib
+from cvlib.object_detection import draw_bbox
 
 class Config(TypedDict):
     sample_hz: int
@@ -19,7 +22,7 @@ class Brain:
     leds: list[led_module.LED]
     sample_hz: int
     loop_counter: int
-
+    
     def __init__(self, config: Config,
                  camera: camera_module.Camera,
                  distance_sensors: list[distance_sensor_module.DistanceSensor],

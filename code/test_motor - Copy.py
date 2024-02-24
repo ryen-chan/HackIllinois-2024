@@ -20,21 +20,22 @@ if __name__ == '__main__':
         }
     })
 
-
-    #angle is an input from a different module
-
-    dt = 20
-    time.time()
-    angle = list(np.linspace(115,65,11))
-    for x in angle:
+    angle = 99
+    total_seconds = 60
+    dt = 0.5
+    start_time = time.time()
+    while time.time() - start.time() < total_seconds:
         theta = angle - 90
         speed = 0.4
+        new_speed = 0.6
         if -5 <= theta <= 5:
             motor1.forward(speed)
             motor2.forward(speed)
         elif 5 <= theta < 90:
-            motor1.backward(speed)
-            motor2.forward(speed)
+            motor1.forward(speed)
+            motor2.forward(new_speed)
         elif -90 < theta < -5:
             motor1.forward(speed)
-            motor2.backward(speed)
+            motor2.backward(new_speed)
+    motor1.stop()
+    motor2.stop()

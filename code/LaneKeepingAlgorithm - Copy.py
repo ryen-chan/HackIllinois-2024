@@ -4,6 +4,14 @@ import math
 import sys
 import time
 #import RPi.GPIO as GPIO
+from picamera2 import Picamera2
+
+# Grab images as numpy arrays and leave everything else to OpenCV.
+cv2.startWindowThread()
+
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
+picam2.start()
 
 
 
@@ -176,8 +184,7 @@ time.sleep(1)
 
 
 while True:
-    ret,frame = video.read()
-    frame = cv2.flip(frame,-1)
+    frame = cv2.flip(picam2.capture_array(),-1)
     
     cv2.imshow("original",frame)
     edges = detect_edges(frame)

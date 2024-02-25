@@ -5,7 +5,7 @@
     },
     "human_driver": {},
     "autonomous": {},
-    "autonomous2": {}
+    "autonomous_demo": {}
   },
   "camera": {
     "show_preview": false
@@ -24,7 +24,7 @@
       }
     }
   ],
-  "leds": [{ "pin": 20 }, { "pin": 21 }],
+  "leds": [{ "pin": 20 }, { "pin": 21 },{"pin":22},{"pin":18}],
   "switches": [{ "pin": 2 }, { "pin": 3 }],
   "vehicle": {
     "motors": {

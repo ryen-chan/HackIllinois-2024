@@ -208,35 +208,37 @@ class Brain(base.Brain):
             if self.distance_sensors[0].distance < 0.25 or self.distance_sensors[1].distance < 0.25: #
                 self.vehicle.stop()
                 print("obstacle detected")
-                self.leds[0].on()
-                self.leds[1].on()
-                time.sleep(2)
-                break
-                #self.leds[0].off()
-                #self.leds[1].off()
-                #continue
+                self.leds[2].on()
+                self.leds[3].on()
+                time.sleep(1)
+                self.leds[2].off()
+                self.leds[3].off()
+                continue
             
             now = time.time() # current time variable
             dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             #error = abs(deviation) 
-            speed = 0.55
-            turn_speed = 0.355
+            speed = 0.50
+            turn_speed = 0.32
+            
+            """
             new_speed = speed*(1 + 0.015*deviation)
             if (new_speed >=1):
                 new_speed = 1
-
-            if deviation < 7 and deviation > -7: # do not steer if there is a 10-degree error range
+            """
+            
+            if deviation < 6 and deviation > -6: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
                 self.vehicle.drive(speed*0.86,True,speed,True)
                 time.sleep(dt*1.8)
 
-            elif deviation > 7: # steer right if the deviation is positive
+            elif deviation > 6: # steer right if the deviation is positive
                 self.vehicle.pivot_right(turn_speed)
                 time.sleep(dt/2)
 
-            elif deviation < -7: # steer left if deviation is negative
+            elif deviation < -6: # steer left if deviation is negative
                 self.vehicle.pivot_left(turn_speed)
                 time.sleep(dt/2)
 

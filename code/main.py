@@ -6,7 +6,6 @@ import json
 
 class Config(TypedDict):
     brains: BrainModuleTypes
-    #camera: camera_module.Config
     distance_sensors: list[distance_sensor_module.Config]
     leds: list[led_module.LED]
     switches: list[switch_module.Switch]
@@ -16,9 +15,6 @@ class Config(TypedDict):
 # read from config.json
 config: Config = json.loads(params.CONFIG_PATH.read_text())
 
-# Load Camera
-#camera_config = config['camera']
-#camera = camera_module.Camera(camera_config)
 
 # Load Distance Sensors
 distance_sensors_config = config['distance_sensors']
@@ -43,7 +39,7 @@ vehicle_config = config['vehicle']
 vehicle = vehicle_module.Vehicle(vehicle_config)
 
 # Load Brain
-brain_type = 'autonomous'
+brain_type = 'autonomous_demo'
 
 
 # merge the base brain config with the brain-specific config, giving priority to the brain-specific config

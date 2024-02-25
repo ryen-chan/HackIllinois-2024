@@ -196,14 +196,15 @@ while True:
     heading_image = display_heading_line(lane_lines_image,steering_angle)
     cv2.imshow("heading line",heading_image)
 
-        
 ##    out.write(frame)
 ##    out2.write(heading_image)
 
     key = cv2.waitKey(1)
     if key == 27:
         break
-    
+
+
+
 video.release()
 ##out.release()
 ##out2.release()

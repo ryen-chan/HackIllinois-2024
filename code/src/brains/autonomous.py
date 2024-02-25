@@ -213,28 +213,25 @@ class Brain(base.Brain):
             dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
-            speed = 0.35
+            speed = 0.5
+            turn_speed = 0.32
             new_speed = speed*(1 + 0.015*deviation)
             if (new_speed >=1):
                 new_speed = 1
 
-            if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
+            if deviation < 8 and deviation > -8: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
-                self.vehicle.drive(speed*0.84,True,speed,True)
+                self.vehicle.drive(speed*0.86,True,speed,True)
                 time.sleep(dt)
 
-            elif deviation > 5: # steer right if the deviation is positive
-                self.vehicle.drive(new_speed*0.84,True,speed,True)
-                time.sleep(dt)
+            elif deviation > 8: # steer right if the deviation is positive
+                self.vehicle.pivot_right(turn_speed)
+                time.sleep(dt/2)
 
-            elif deviation < -5: # steer left if deviation is negative
-                new_speed = new_speed * 1.8 
-                if (new_speed >=1):
-                    new_speed = 1
-                print(new_speed)
-                self.vehicle.drive(speed*0.84,True,new_speed,True)
-                time.sleep(dt)
+            elif deviation < -8: # steer left if deviation is negative
+                self.vehicle.pivot_left(turn_speed)
+                time.sleep(dt/2)
 
 
         cv2.destroyAllWindows()

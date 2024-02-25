@@ -23,7 +23,7 @@ class Brain(base.Brain):
         cv2.startWindowThread()
 
         picam2 = Picamera2()
-        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (400, 300)}))
+        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (360, 240)}))
         picam2.start()
 
 
@@ -189,6 +189,7 @@ class Brain(base.Brain):
         lastTime = 0 
         lastError = 0
 
+        
         while True:
             frame = picam2.capture_array()
             
@@ -201,56 +202,43 @@ class Brain(base.Brain):
             steering_angle = get_steering_angle(frame, lane_lines)
             heading_image = display_heading_line(lane_lines_image,steering_angle)
             cv2.imshow("heading line",heading_image)
-
             key = cv2.waitKey(1)
+            
             if key == 27:
                 self.vehicle.stop()
                 break
-        
+            
+            if self.distance_sensors[0].distance < 0.25 or self.distance_sensors[1].distance < 0.25:
+                self.vehicle.stop()
+                print("obstacle")
+                break
+            
             now = time.time() # current time variable
-            dt = now - lastTime
-            time_int = 0.05 # time interval
+            dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
+            speed = 0.55
+            turn_speed = 0.355
+            new_speed = speed*(1 + 0.015*deviation)
+            if (new_speed >=1):
+                new_speed = 1
 
-            speed = 0.65    #PWM speed 
-
-            kp = 0.4
-            kd = kp * 0.65
-            
-            derivative = kd * (error - lastError) / dt 
-            proportional = kp * error
-            PD = int(speed + derivative + proportional)
-            spd = abs(PD)
-
-            if(spd > 1):
-                spd = 1
-
-            if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
+            if deviation < 8 and deviation > -8: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
                 self.vehicle.drive(speed*0.86,True,speed,True)
-                time.sleep(dt*2)
+                time.sleep(dt*1.8)
 
-            elif deviation > 5: # steer right if the deviation is positive
-                self.vehicle.pivot_right(spd)
-                time.sleep(dt * 0.75)
+            elif deviation > 8: # steer right if the deviation is positive
+                self.vehicle.pivot_right(turn_speed)
+                time.sleep(dt/2)
 
-            elif deviation < -5: # steer left if deviation is negative
-                self.vehicle.pivot_left(spd)
-                time.sleep(dt * 0.75)
+            elif deviation < -8: # steer left if deviation is negative
+                self.vehicle.pivot_left(turn_speed)
+                time.sleep(dt/2)
 
 
         cv2.destroyAllWindows()
 
-"""
         # if anything is detected by the sensors, stop the car
-        stop = False
-        for distance_sensor in self.distance_sensors:
-            if distance_sensor.distance < 0.25:
-                self.vehicle.stop()
-                stop = True
 
-        if not stop:
-            self.vehicle.drive_forward()
-"""

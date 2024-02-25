@@ -232,11 +232,11 @@ class Brain(base.Brain):
                 self.vehicle.drive(speed*0.86,True,speed,True)
                 time.sleep(dt*2)
 
-            elif deviation > 8: # steer right if the deviation is positive
+            elif deviation > 5: # steer right if the deviation is positive
                 self.vehicle.pivot_right(spd)
                 time.sleep(dt * 0.75)
 
-            elif deviation < -8: # steer left if deviation is negative
+            elif deviation < -5: # steer left if deviation is negative
                 self.vehicle.pivot_left(spd)
                 time.sleep(dt * 0.75)
 

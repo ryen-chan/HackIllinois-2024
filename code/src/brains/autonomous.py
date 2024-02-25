@@ -186,7 +186,12 @@ class Brain(base.Brain):
             return steering_angle
 
         time.sleep(1)
-        
+        lastTime = 0 
+        lastError = 0
+        kp = 0.4
+        kd = kp * 0.65
+        speed = 0.65    #PWM speed 
+
         while True:
             frame = picam2.capture_array()
             
@@ -216,31 +221,40 @@ class Brain(base.Brain):
                 continue
             
             now = time.time() # current time variable
-            dt = 0.05 # time interval
+            dt = now - lastTime
+            time_int = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
-            #error = abs(deviation) 
-            speed = 0.50
-            turn_speed = 0.32
+            error = abs(deviation) 
             
-            """
-            new_speed = speed*(1 + 0.015*deviation)
-            if (new_speed >=1):
-                new_speed = 1
-            """
-            
-            if deviation < 6 and deviation > -6: # do not steer if there is a 10-degree error range
+            derivative = kd * (error - lastError) / dt 
+            proportional = kp * error
+            PD = int(speed + derivative + proportional)
+            spd = abs(PD)
+
+            if(spd > 1):
+                spd = 1
+
+            if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
-                self.vehicle.drive(speed*0.86,True,speed,True)
-                time.sleep(dt*1.8)
+                self.vehicle.drive(spd*0.86,True,spd,True)
+                time.sleep(dt*2)
 
-            elif deviation > 6: # steer right if the deviation is positive
-                self.vehicle.pivot_right(turn_speed)
-                time.sleep(dt/2)
+            elif deviation > 5: # steer right if the deviation is positive
+                turn_spd = spd(1+0.15*spd) 
+                if(turn_spd > 1):
+                    turn_spd = 1
+                self.vehicle.drive(turn_spd*0.86,True,spd,True)
+                time.sleep(dt * 0.75)
 
-            elif deviation < -6: # steer left if deviation is negative
-                self.vehicle.pivot_left(turn_speed)
-                time.sleep(dt/2)
+            elif deviation < -5: # steer left if deviation is negative
+                turn_spd = spd(1+0.15*spd) 
+                if(turn_spd > 1):
+                    turn_spd = 1
+                self.vehicle.drive(spd*0.86,True,turn_spd,True)
+                time.sleep(dt * 0.75)
 
+            lastError = error
+            lastTime = time.time()
 
         cv2.destroyAllWindows()

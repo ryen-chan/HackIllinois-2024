@@ -23,7 +23,7 @@ class Brain(base.Brain):
         cv2.startWindowThread()
 
         picam2 = Picamera2()
-        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
+        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (400, 300)}))
         picam2.start()
 
 
@@ -90,7 +90,7 @@ class Brain(base.Brain):
             for line_segment in line_segments:
                 for x1, y1, x2, y2 in line_segment:
                     if x1 == x2:
-                        print("skipping vertical lines (slope = infinity")
+                        #print("skipping vertical lines (slope = infinity)")
                         continue
                     
                     fit = np.polyfit((x1, x2), (y1, y2), 1)
@@ -210,28 +210,33 @@ class Brain(base.Brain):
 
             
             now = time.time() # current time variable
-            dt = 0.1 # time interval
+            dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
-            speed = 0.30
-            new_speed = 0.5
+            speed = 0.35
+            new_speed = speed*(1 + 0.015*deviation)
+            if (new_speed >=1):
+                new_speed = 1
 
             if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
-                self.vehicle.drive_forward(speed)
+                self.vehicle.drive(speed*0.84,True,speed,True)
                 time.sleep(dt)
 
             elif deviation > 5: # steer right if the deviation is positive
-                self.vehicle.drive(speed,True,new_speed,True)
+                self.vehicle.drive(new_speed*0.84,True,speed,True)
                 time.sleep(dt)
 
             elif deviation < -5: # steer left if deviation is negative
-                self.vehicle.drive(new_speed,True,speed,True)
+                new_speed = new_speed * 1.8 
+                if (new_speed >=1):
+                    new_speed = 1
+                print(new_speed)
+                self.vehicle.drive(speed*0.84,True,new_speed,True)
                 time.sleep(dt)
 
 
-        video.release()
         cv2.destroyAllWindows()
 
 """

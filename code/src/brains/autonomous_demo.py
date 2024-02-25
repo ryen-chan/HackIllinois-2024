@@ -234,8 +234,8 @@ class Brain(base.Brain):
             dt = 0.1 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             #error = abs(deviation) 
-            speed = 0.50
-            turn_speed = 0.32
+            speed = 0.52
+            turn_speed = 0.33
             
             """
             new_speed = speed*(1 + 0.015*deviation)

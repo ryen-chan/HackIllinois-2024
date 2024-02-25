@@ -17,9 +17,9 @@ class Brain(base.Brain):
     def __init__(self, config: Config, *arg):
         super().__init__(config, *arg)
 
-    def logic(self):
-        """If anything is detected by the distance_sensors, stop the car"""
-        # Grab images as numpy arrays and leave everything else to OpenCV.
+    def logic(self): #handles logic of car 
+        
+        # Grab images as numpy arrays via picam2 pass data to OpenCV.
         cv2.startWindowThread()
 
         picam2 = Picamera2()
@@ -28,7 +28,7 @@ class Brain(base.Brain):
 
 
 
-        def detect_edges(frame):
+        def detect_edges(frame):    #edge detection, convert to HSV
             # filter for blue lane lines
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             #cv2.imshow("HSV",hsv)
@@ -38,7 +38,7 @@ class Brain(base.Brain):
             #cv2.imshow("mask",mask)
             
             # detect edges
-            edges = cv2.Canny(mask, 50, 100)
+            edges = cv2.Canny(mask, 50, 100)    #canny detection
             #cv2.imshow("edges",edges)
             
             return edges
@@ -58,21 +58,21 @@ class Brain(base.Brain):
             cv2.fillPoly(mask, polygon, 255)
             
             cropped_edges = cv2.bitwise_and(edges, mask)
-            cv2.imshow("roi",cropped_edges)
+            cv2.imshow("roi",cropped_edges)     #show region of interest
             
             return cropped_edges
 
-        def detect_line_segments(cropped_edges):
-            rho = 1  
-            theta = np.pi / 180  
-            min_threshold = 10  
+        def detect_line_segments(cropped_edges):    #overlay line segments using HoughLinesP(robalistic)
+            rho = 1    #resolution of r
+            theta = np.pi / 180  #resolution of theta
+            min_threshold = 10   #minimum number of intersections to count as line
             
             line_segments = cv2.HoughLinesP(cropped_edges, rho, theta, min_threshold, 
                                             np.array([]), minLineLength=5, maxLineGap=150)
 
             return line_segments
 
-        def average_slope_intercept(frame, line_segments):
+        def average_slope_intercept(frame, line_segments): #averge slope of Hough Lines
             lane_lines = []
             
             if line_segments is None:
@@ -114,7 +114,7 @@ class Brain(base.Brain):
 
             return lane_lines
 
-        def make_points(frame, line):
+        def make_points(frame, line):   #bounded coordinates of the lane lines (helper)
             height, width, _ = frame.shape
             
             slope, intercept = line
@@ -130,7 +130,7 @@ class Brain(base.Brain):
             
             return [[x1, y1, x2, y2]]
 
-        def display_lines(frame, lines, line_color=(0, 255, 0), line_width=6):
+        def display_lines(frame, lines, line_color=(0, 255, 0), line_width=6): #draw lines
             line_image = np.zeros_like(frame)
             
             if lines is not None:
@@ -163,19 +163,19 @@ class Brain(base.Brain):
             
             height,width,_ = frame.shape
             
-            if len(lane_lines) == 2:
+            if len(lane_lines) == 2:    #both lines detected
                 _, _, left_x2, _ = lane_lines[0][0]
                 _, _, right_x2, _ = lane_lines[1][0]
                 mid = int(width / 2)
                 x_offset = (left_x2 + right_x2) / 2 - mid
                 y_offset = int(height / 2)
                 
-            elif len(lane_lines) == 1:
+            elif len(lane_lines) == 1:  #only one line
                 x1, _, x2, _ = lane_lines[0][0]
                 x_offset = x2 - x1
                 y_offset = int(height / 2)
                 
-            elif len(lane_lines) == 0:
+            elif len(lane_lines) == 0: #no lines (infinte)
                 x_offset = 0
                 y_offset = int(height / 2)
                 
@@ -186,9 +186,6 @@ class Brain(base.Brain):
             return steering_angle
 
         time.sleep(1)
-        lastTime = 0 
-        lastError = 0
-
         
         while True:
             frame = picam2.capture_array()
@@ -202,43 +199,46 @@ class Brain(base.Brain):
             steering_angle = get_steering_angle(frame, lane_lines)
             heading_image = display_heading_line(lane_lines_image,steering_angle)
             cv2.imshow("heading line",heading_image)
-            key = cv2.waitKey(1)
             
+            key = cv2.waitKey(1)
             if key == 27:
                 self.vehicle.stop()
                 break
             
-            if self.distance_sensors[0].distance < 0.25 or self.distance_sensors[1].distance < 0.25:
+            if self.distance_sensors[0].distance < 0.25 or self.distance_sensors[1].distance < 0.25: #
                 self.vehicle.stop()
-                print("obstacle")
+                print("obstacle detected")
+                self.leds[0].on()
+                self.leds[1].on()
+                time.sleep(2)
                 break
+                #self.leds[0].off()
+                #self.leds[1].off()
+                #continue
             
             now = time.time() # current time variable
             dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
-            error = abs(deviation) 
+            #error = abs(deviation) 
             speed = 0.55
             turn_speed = 0.355
             new_speed = speed*(1 + 0.015*deviation)
             if (new_speed >=1):
                 new_speed = 1
 
-            if deviation < 8 and deviation > -8: # do not steer if there is a 10-degree error range
+            if deviation < 7 and deviation > -7: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
                 self.vehicle.drive(speed*0.86,True,speed,True)
                 time.sleep(dt*1.8)
 
-            elif deviation > 8: # steer right if the deviation is positive
+            elif deviation > 7: # steer right if the deviation is positive
                 self.vehicle.pivot_right(turn_speed)
                 time.sleep(dt/2)
 
-            elif deviation < -8: # steer left if deviation is negative
+            elif deviation < -7: # steer left if deviation is negative
                 self.vehicle.pivot_left(turn_speed)
                 time.sleep(dt/2)
 
 
         cv2.destroyAllWindows()
-
-        # if anything is detected by the sensors, stop the car
-

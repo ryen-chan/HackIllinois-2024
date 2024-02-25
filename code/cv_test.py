@@ -12,7 +12,7 @@ picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888',
 picam2.start()
 
 while True:
-    im = cv2.flip(picam2.capture_array(),-1)
+    im = picam2.capture_array()
 
     cv2.imshow("cam", im)
     key = cv2.waitKey(1)

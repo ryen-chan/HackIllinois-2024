@@ -184,7 +184,7 @@ time.sleep(1)
 
 
 while True:
-    frame = cv2.flip(picam2.capture_array(),-1)
+    frame = picam2.capture_array()
     
     cv2.imshow("original",frame)
     edges = detect_edges(frame)

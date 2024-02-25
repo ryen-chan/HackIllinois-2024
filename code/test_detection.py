@@ -20,7 +20,9 @@ picam2.start()
 def obj_detection():
  
     #frame = cv2.imread('C:\\Users\\ryan\\Desktop\\OpenCV Test\\Cute_dog.jpg')
-    frame = cv2.flip(picam2.capture_array(),-1)
+    frame = picam2.capture_array()
+    #cv2.flip(picam2.capture_array(),-1)
+    
     #ret, frame = video.read()
     #if not ret:
         #print("Could not read frame")

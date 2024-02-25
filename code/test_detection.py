@@ -8,15 +8,6 @@ import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 """
 
-# Grab images as numpy arrays and leave everything else to OpenCV.
-cv2.startWindowThread()
-
-picam2 = Picamera2()
-picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
-picam2.start()
-
-#video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-
 def obj_detection():
  
     #frame = cv2.imread('C:\\Users\\ryan\\Desktop\\OpenCV Test\\Cute_dog.jpg')
@@ -28,10 +19,18 @@ def obj_detection():
         #print("Could not read frame")
         #exit()
 
-    box, label, conf = cvlib.detect_common_objects(frame, confidence=0.25, model='yolov3-tiny')
+    box, label, conf = cvlib.detect_common_objects(frame) #, confidence=0.25, model='yolov3-tiny')
     image = draw_bbox(frame, box, label, conf)
     cv2.imshow("Camera Feed", image)
 
+# Grab images as numpy arrays and leave everything else to OpenCV.
+cv2.startWindowThread()
+
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
+picam2.start()
+
+#video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while True:
     obj_detection()

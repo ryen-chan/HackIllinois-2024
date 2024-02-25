@@ -1,4 +1,4 @@
-from . import base, human_driver, autonomous
+from . import base, human_driver, autonomous, autonomous2
 from typing import TypedDict
 import types
 
@@ -7,6 +7,7 @@ class ModuleTypes(TypedDict):
     autonomous: types.ModuleType
     base: types.ModuleType
     human_driver: types.ModuleType
+    autonomous2: types.ModuleType
 
 
 Types: ModuleTypes = {

@@ -1,5 +1,5 @@
 from typing import TypedDict
-from .. import vehicle as vehicle_module, camera as camera_module, distance_sensor as distance_sensor_module, led as led_module, switch as switch_module
+from .. import vehicle as vehicle_module, distance_sensor as distance_sensor_module, led as led_module, switch as switch_module
 import time
 
 import cv2
@@ -14,7 +14,7 @@ class Brain:
 
     """The base Brain object, which all other Brains should inherit"""
 
-    camera: camera_module.Camera
+    #camera: camera_module.Camera
     vehicle: vehicle_module.Vehicle
     distance_sensors: list[distance_sensor_module.DistanceSensor]
     running: bool
@@ -24,14 +24,13 @@ class Brain:
     loop_counter: int
     
     def __init__(self, config: Config,
-                 camera: camera_module.Camera,
                  distance_sensors: list[distance_sensor_module.DistanceSensor],
                  leds: list[led_module.LED],
                  switches: list[switch_module.Switch],
                  vehicle: vehicle_module.Vehicle,
                  ):
 
-        self.camera = camera
+        #self.camera = camera
         self.distance_sensors = distance_sensors
         self.leds = leds
         self.switches = switches
@@ -51,7 +50,7 @@ class Brain:
         while self.running:
             start_loop_time = time.time()
 
-            self.camera.capture()
+            #self.camera.capture()
             self.logic()
 
             # ensure that the loop is running at the correct max frequency

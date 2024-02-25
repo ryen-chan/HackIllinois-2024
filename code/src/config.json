@@ -4,7 +4,8 @@
       "sample_hz": 10
     },
     "human_driver": {},
-    "autonomous": {}
+    "autonomous": {},
+    "autonomous2": {}
   },
   "camera": {
     "show_preview": false

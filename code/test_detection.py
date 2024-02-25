@@ -19,7 +19,9 @@ def obj_detection():
         print("Could not read frame")
         exit()
     """
-    box, label, conf = cvlib.detect_common_objects(frame) #, confidence=0.25, model='yolov3-tiny')
+    # [:,:,0:3] need 3 channels not 4
+    # using worse model for speed
+    box, label, conf = cvlib.detect_common_objects(frame[:,:,0:3], confidence=0.25, model='yolov3-tiny')
     image = draw_bbox(frame, box, label, conf)
     cv2.imshow("Camera Feed", image)
 
@@ -28,7 +30,7 @@ cv2.startWindowThread()
 
 picam2 = Picamera2()
 #'XRGB8888'
-picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (320, 240)}))
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
 picam2.start()
 
 #video = cv2.VideoCapture(0, cv2.CAP_DSHOW)

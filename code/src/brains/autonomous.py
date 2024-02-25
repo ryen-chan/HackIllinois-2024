@@ -212,7 +212,6 @@ class Brain(base.Brain):
             time_int = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
-<<<<<<< HEAD
 
             speed = 0.65    #PWM speed 
 
@@ -230,42 +229,16 @@ class Brain(base.Brain):
             if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
-                self.vehicle.drive(spd*0.86,True,spd,True)
-                time.sleep(time_int*1.75)
+                self.vehicle.drive(speed*0.86,True,speed,True)
+                time.sleep(dt*2)
 
-            elif deviation > 5: # steer right if the deviation is positive
+            elif deviation > 8: # steer right if the deviation is positive
                 self.vehicle.pivot_right(spd)
-                time.sleep(time_int * 0.75)
+                time.sleep(dt * 0.75)
 
-            elif deviation < -5: # steer left if deviation is negative
+            elif deviation < -8: # steer left if deviation is negative
                 self.vehicle.pivot_left(spd)
-                time.sleep(time_int * 0.75)
-
-            
-=======
-            speed = 0.35
-            new_speed = speed*(1 + 0.015*deviation)
-            if (new_speed >=1):
-                new_speed = 1
-
-            if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
-                deviation = 0
-                error = 0
-                self.vehicle.drive(speed*0.84,True,speed,True)
-                time.sleep(dt)
-
-            elif deviation > 5: # steer right if the deviation is positive
-                self.vehicle.drive(new_speed*0.84,True,speed,True)
-                time.sleep(dt)
-
-            elif deviation < -5: # steer left if deviation is negative
-                new_speed = new_speed * 1.8 
-                if (new_speed >=1):
-                    new_speed = 1
-                print(new_speed)
-                self.vehicle.drive(speed*0.84,True,new_speed,True)
-                time.sleep(dt)
->>>>>>> 04b731ede4d99de4f726df89e9e320163a50584a
+                time.sleep(dt * 0.75)
 
 
         cv2.destroyAllWindows()

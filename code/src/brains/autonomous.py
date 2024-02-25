@@ -212,7 +212,6 @@ class Brain(base.Brain):
             time_int = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
-<<<<<<< HEAD
 
             speed = 0.65    #PWM speed 
 
@@ -242,7 +241,6 @@ class Brain(base.Brain):
                 time.sleep(time_int * 0.75)
 
             
-=======
             speed = 0.35
             new_speed = speed*(1 + 0.015*deviation)
             if (new_speed >=1):
@@ -265,7 +263,6 @@ class Brain(base.Brain):
                 print(new_speed)
                 self.vehicle.drive(speed*0.84,True,new_speed,True)
                 time.sleep(dt)
->>>>>>> 04b731ede4d99de4f726df89e9e320163a50584a
 
 
         cv2.destroyAllWindows()

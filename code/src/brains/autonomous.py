@@ -214,7 +214,7 @@ class Brain(base.Brain):
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
             speed = 0.5
-            turn_speed = 0.32
+            turn_speed = 0.30
             new_speed = speed*(1 + 0.015*deviation)
             if (new_speed >=1):
                 new_speed = 1
@@ -223,15 +223,15 @@ class Brain(base.Brain):
                 deviation = 0
                 error = 0
                 self.vehicle.drive(speed*0.86,True,speed,True)
-                time.sleep(dt)
+                time.sleep(dt*2)
 
             elif deviation > 8: # steer right if the deviation is positive
                 self.vehicle.pivot_right(turn_speed)
-                time.sleep(dt/2)
+                time.sleep(dt * 0.75)
 
             elif deviation < -8: # steer left if deviation is negative
                 self.vehicle.pivot_left(turn_speed)
-                time.sleep(dt/2)
+                time.sleep(dt * 0.75)
 
 
         cv2.destroyAllWindows()

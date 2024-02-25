@@ -4,8 +4,6 @@ import numpy as np
 import math
 import sys
 import time
-#import RPi.GPIO as GPIO
-from src import motor as motor_module
 from picamera2 import Picamera2
 
 class Config(base.Config):
@@ -21,26 +19,11 @@ class Brain(base.Brain):
 
     def logic(self):
         """If anything is detected by the distance_sensors, stop the car"""
-        motor1 = motor_module.Motor({
-            "pins": {
-                "speed": 13,
-                "control1": 5,
-                "control2": 6
-            }
-        })
-
-        motor2 = motor_module.Motor({
-            "pins": {
-                "speed": 12,
-                "control1": 7,
-                "control2": 8
-            }
-        })
         # Grab images as numpy arrays and leave everything else to OpenCV.
         cv2.startWindowThread()
 
         picam2 = Picamera2()
-        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (320, 240)}))
+        picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (400, 300)}))
         picam2.start()
 
 
@@ -107,7 +90,7 @@ class Brain(base.Brain):
             for line_segment in line_segments:
                 for x1, y1, x2, y2 in line_segment:
                     if x1 == x2:
-                        print("skipping vertical lines (slope = infinity")
+                        #print("skipping vertical lines (slope = infinity)")
                         continue
                     
                     fit = np.polyfit((x1, x2), (y1, y2), 1)
@@ -202,10 +185,6 @@ class Brain(base.Brain):
             
             return steering_angle
 
-        video = cv2.VideoCapture(0)
-        video.set(cv2.CAP_PROP_FRAME_WIDTH,320)
-        video.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
-
         time.sleep(1)
         lastTime = 0 
         lastError = 0
@@ -225,34 +204,39 @@ class Brain(base.Brain):
 
             key = cv2.waitKey(1)
             if key == 27:
+                self.vehicle.stop()
                 break
         
 
             
             now = time.time() # current time variable
-            dt = 0.25 # time interval
+            dt = 0.05 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             error = abs(deviation) 
+            speed = 0.35
+            new_speed = speed*(1 + 0.015*deviation)
+            if (new_speed >=1):
+                new_speed = 1
 
             if deviation < 5 and deviation > -5: # do not steer if there is a 10-degree error range
                 deviation = 0
                 error = 0
-                motor1.forward(speed)
-                motor2.forward(speed)
+                self.vehicle.drive(speed*0.84,True,speed,True)
                 time.sleep(dt)
 
             elif deviation > 5: # steer right if the deviation is positive
-                motor1.forward(speed)
-                motor2.forward(new_speed)
+                self.vehicle.drive(new_speed*0.84,True,speed,True)
                 time.sleep(dt)
 
             elif deviation < -5: # steer left if deviation is negative
-                motor1.forward(speed)
-                motor2.backward(new_speed)
+                new_speed = new_speed * 1.8 
+                if (new_speed >=1):
+                    new_speed = 1
+                print(new_speed)
+                self.vehicle.drive(speed*0.84,True,new_speed,True)
                 time.sleep(dt)
 
 
-        video.release()
         cv2.destroyAllWindows()
 
 """

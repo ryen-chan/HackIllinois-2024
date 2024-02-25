@@ -208,7 +208,7 @@ class Brain(base.Brain):
             
             sens1 = self.distance_sensors[0].distance
             sens2 = self.distance_sensors[1].distance
-            stop_dist = 0.19
+            stop_dist = 0.16
             
             if sens1 < stop_dist or sens2 < stop_dist: 
                 self.vehicle.stop()
@@ -221,7 +221,7 @@ class Brain(base.Brain):
                 
                 if(count == 4):
                     self.vehicle.pivot_right(0.8)
-                    time.sleep(0.79)
+                    time.sleep(0.83)
                     self.leds[2].off()
                     self.leds[3].off()
                     continue
@@ -231,7 +231,7 @@ class Brain(base.Brain):
                 continue
                 
             now = time.time() # current time variable
-            dt = 0.05 # time interval
+            dt = 0.1 # time interval
             deviation = steering_angle - 90 # equivalent to angle_to_mid_deg variable
             #error = abs(deviation) 
             speed = 0.50
